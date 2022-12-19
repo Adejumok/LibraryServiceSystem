@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import com.example.demo.models.enums.RoleType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class LibrarySystemUser {
     private String firstName;
     private String lastName;
     private String email;
+    @JsonIgnore
     private String password;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Role> roles;
@@ -29,6 +31,9 @@ public class LibrarySystemUser {
     private String address;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Wallet> wallets;
+    @OneToOne
+    @JoinColumn(name = "authority_id")
+    private Authority authority;
 
     public LibrarySystemUser(String firstName, String lastName, String email, String password, RoleType roleType) {
         this.firstName = firstName;
