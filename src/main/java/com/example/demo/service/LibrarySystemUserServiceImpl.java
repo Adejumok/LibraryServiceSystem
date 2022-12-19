@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.request.RegisterNewUserRequest;
 import com.example.demo.dto.response.RegisterNewUserResponse;
 import com.example.demo.exception.LibrarySystemException;
+import com.example.demo.models.Authority;
 import com.example.demo.models.LibrarySystemUser;
 import com.example.demo.models.Role;
 import com.example.demo.repositories.UserRepository;
@@ -31,13 +32,14 @@ public class LibrarySystemUserServiceImpl implements LibrarySystemUserService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         LibrarySystemUser user = userRepository.findByEmail(username).orElse(null);
         if (user != null){
-            return new User(user.getEmail(),user.getPassword(),getAuthorities(user.getRoles()));
+            return new User(user.getEmail(),user.getPassword(),getRoles(user.getRoles()));
         }
         throw new LibrarySystemException(username+" email doesn't exist", 404);
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorities(Set<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleType().name())).collect(Collectors.toSet());
+    private Collection<? extends GrantedAuthority> getRoles(Set<Role> roles) {
+        return roles.stream().map(role -> new SimpleGrantedAuthority(
+                role.getAuthorities().toString())).collect(Collectors.toSet());
     }
 
     @Override

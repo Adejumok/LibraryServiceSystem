@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.models.Authority;
 import com.example.demo.models.LibrarySystemUser;
 import com.example.demo.models.Role;
 import com.example.demo.repositories.UserRepository;
@@ -32,13 +33,19 @@ public class LibrarySysAuthenticationProvider implements AuthenticationProvider 
                 new UsernameNotFoundException("User not found."));
 
         if (bCryptPasswordEncoder.matches(password, user.getPassword())){
-            List<GrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority(user.getAuthority().getAuthority()));
-            return new UsernamePasswordAuthenticationToken(email, password, authorities);
+            return new UsernamePasswordAuthenticationToken(email, password, getRoles(user.getRoles()));
         }
         else{
             throw new BadCredentialsException("Invalid credentials");
         }
+    }
+
+    private Set<SimpleGrantedAuthority> getRoles(Set<Role> roles) {
+        Set<SimpleGrantedAuthority> list = new HashSet<>();
+        for (Role role: roles){
+            list.add(new SimpleGrantedAuthority(role.getAuthorities().toString()));
+        }
+        return list;
     }
 
 

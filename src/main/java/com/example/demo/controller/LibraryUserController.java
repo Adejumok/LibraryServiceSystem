@@ -11,6 +11,7 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,11 +48,13 @@ public class LibraryUserController {
     }
 
     @GetMapping("/dashboard")
+    @PreAuthorize("hasRole('ROOT')")
     public String getBoard(){
-        return "Welcome to the Dashboard.";
+        return "Welcome to the Dashboard. ";
     }
 
-    @GetMapping("/profie")
+    @GetMapping("/profile")
+    @PreAuthorize("hasRole('ROOT')")
     public String getProfile(){
         return "Welcome to the Profile Page.";
     }

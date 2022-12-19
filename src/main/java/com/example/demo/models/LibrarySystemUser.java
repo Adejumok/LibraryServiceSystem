@@ -1,5 +1,6 @@
 package com.example.demo.models;
 
+import com.example.demo.models.enums.AuthorityType;
 import com.example.demo.models.enums.RoleType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -31,11 +32,10 @@ public class LibrarySystemUser {
     private String address;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Wallet> wallets;
-    @OneToOne
-    @JoinColumn(name = "authority_id")
-    private Authority authority;
 
-    public LibrarySystemUser(String firstName, String lastName, String email, String password, RoleType roleType) {
+
+    public LibrarySystemUser(String firstName, String lastName, String email, String password,
+                             RoleType roleType) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

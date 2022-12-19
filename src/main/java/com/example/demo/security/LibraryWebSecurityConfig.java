@@ -6,10 +6,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @AllArgsConstructor
 public class LibraryWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -25,8 +27,7 @@ public class LibraryWebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/signup", "/login").permitAll()
-                .antMatchers("/dashboard").hasAuthority("READ AUTHORITY")
-                .antMatchers("/profile").hasAuthority("WRITE PRIVILEGE")
+                .anyRequest().authenticated()
                 .and()
                 .httpBasic();
     }

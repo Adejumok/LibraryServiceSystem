@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.models.LibrarySystemUser;
+import com.example.demo.models.enums.AuthorityType;
 import com.example.demo.models.enums.RoleType;
 import com.example.demo.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
