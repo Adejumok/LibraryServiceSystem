@@ -22,8 +22,9 @@ public class Book {
     private LibrarySystemUser user;
     private String title;
     private String author;
+    private Long isbn;
     private BookType bookType;
-    private LocalDate publicationDate;
     private BigDecimal price;
     private String bookDescription;
+    private String imageUrl;
 }

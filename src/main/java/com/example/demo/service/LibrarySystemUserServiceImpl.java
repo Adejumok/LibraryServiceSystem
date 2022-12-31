@@ -1,12 +1,15 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.request.MailRequest;
 import com.example.demo.dto.request.RegisterNewUserRequest;
+import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.RegisterNewUserResponse;
+import com.example.demo.dto.response.UserUpdateResponse;
 import com.example.demo.exception.LibrarySystemException;
-import com.example.demo.models.Authority;
 import com.example.demo.models.LibrarySystemUser;
 import com.example.demo.models.Role;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.service.notification.EmailService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,6 +31,7 @@ public class LibrarySystemUserServiceImpl implements LibrarySystemUserService {
     private final UserRepository userRepository;
     private final ModelMapper mapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final EmailService emailService;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         LibrarySystemUser user = userRepository.findByEmail(username).orElse(null);
@@ -53,9 +57,49 @@ public class LibrarySystemUserServiceImpl implements LibrarySystemUserService {
         String encodedUserPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedUserPassword);
         LibrarySystemUser registeredUser = userRepository.save(user);
-        RegisterNewUserResponse response = new RegisterNewUserResponse();
-        response.setMessage(registeredUser.getFirstName()+" successfully registered");
-        response.setEmail(registeredUser.getEmail());
-        return response;
+        sendMail(registerNewUserRequest);
+        return RegisterNewUserResponse.builder()
+                .message(registeredUser.getFirstName()+" registered successfully.")
+                .email(registeredUser.getEmail())
+                .build();
     }
+
+    @Override
+    public UserUpdateResponse userUpdateResponse(UserUpdateRequest updateRequest) {
+        Optional<LibrarySystemUser> foundUser = userRepository.findByEmail(updateRequest.getEmail());
+        if (foundUser.isPresent()){
+            LibrarySystemUser existingUser = foundUser.get();
+            existingUser.setLastName(updateRequest.getLastName());
+            existingUser.setAddress(updateRequest.getAddress());
+            existingUser.setMobile(updateRequest.getMobile());
+            userRepository.save(existingUser);
+            return UserUpdateResponse.builder()
+                    .message(existingUser.getFirstName()+" profile updated successfully.")
+                    .build();
+        }
+        throw new  LibrarySystemException("Library user with email "+updateRequest.getEmail()+" " +
+                "does not exist.", 400);
+    }
+
+    @Override
+    public LibrarySystemUser getUserByEmail(String email) {
+        LibrarySystemUser foundUser = userRepository.findByEmail(email).orElse(null);
+        if (foundUser != null){
+            return foundUser;
+        }
+        throw new LibrarySystemException("User with "+email+" not found", 404);
+    }
+
+    private void sendMail(RegisterNewUserRequest request){
+        MailRequest.builder()
+                .sender(System.getenv("SENDER"))
+                .receiver(request.getEmail())
+                .subject("Library System")
+                .body("Hello " + request.getFirstName() + ". " +
+                        "We are glad to let you know you have successfully registered")
+                .build();
+
+    }
+
+
 }

@@ -2,13 +2,16 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.request.RegisterNewUserRequest;
 import com.example.demo.dto.request.UserLoginRequest;
+import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.RegisterNewUserResponse;
+import com.example.demo.dto.response.UserUpdateResponse;
 import com.example.demo.exception.LibrarySystemException;
-import com.example.demo.repositories.UserRepository;
+import com.example.demo.models.LibrarySystemUser;
+import com.example.demo.security.AuthToken;
+import com.example.demo.security.jwt.JwtTokenProvider;
 import com.example.demo.service.LibrarySystemUserService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,9 +26,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @AllArgsConstructor
 public class LibraryUserController {
-    @Autowired
     private final AuthenticationManager authenticationManager;
     private final LibrarySystemUserService userService;
+    private final JwtTokenProvider tokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@NonNull @RequestBody RegisterNewUserRequest newUserRequest){
@@ -34,7 +37,7 @@ public class LibraryUserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginRequest loginRequest) throws Exception{
+    public ResponseEntity<?> login(@RequestBody UserLoginRequest loginRequest) throws LibrarySystemException{
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
@@ -44,7 +47,15 @@ public class LibraryUserController {
             throw new LibrarySystemException("Invalid login details.", 404);
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new  ResponseEntity<>(HttpStatus.OK);
+        final String token = tokenProvider.generateToken(authentication);
+        LibrarySystemUser user = userService.getUserByEmail(loginRequest.getEmail());
+        return new  ResponseEntity<>(new AuthToken(token, user.getId()), HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@RequestBody UserUpdateRequest updateRequest) throws LibrarySystemException{
+        UserUpdateResponse response = userService.userUpdateResponse(updateRequest);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/dashboard")

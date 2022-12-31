@@ -2,12 +2,14 @@ package com.example.demo.dto.request;
 
 import lombok.*;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserLoginRequest {
-    private String password;
+public class UserUpdateRequest {
+    private String lastName;
     private String email;
+    private String mobile;
+    private String address;
 }
