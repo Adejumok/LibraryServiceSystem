@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.request.AddBookRequest;
-import com.example.demo.dto.response.AddBookResponse;
+import com.example.demo.dto.request.bookRequest.AddBookRequest;
+import com.example.demo.dto.response.bookResponse.AddBookResponse;
 import com.example.demo.models.Book;
 import com.example.demo.service.BookService;
 import lombok.AllArgsConstructor;

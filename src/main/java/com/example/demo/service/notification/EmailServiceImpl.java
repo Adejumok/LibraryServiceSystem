@@ -1,7 +1,7 @@
 package com.example.demo.service.notification;
 
-import com.example.demo.dto.request.MailRequest;
-import com.example.demo.dto.response.MailResponse;
+import com.example.demo.dto.request.userRequest.MailRequest;
+import com.example.demo.dto.response.userResponse.MailResponse;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;

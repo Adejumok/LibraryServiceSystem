@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.request.AddBookRequest;
-import com.example.demo.dto.request.EditBookRequest;
-import com.example.demo.dto.response.AddBookResponse;
-import com.example.demo.dto.response.EditBookResponse;
+import com.example.demo.dto.request.bookRequest.AddBookRequest;
+import com.example.demo.dto.request.bookRequest.EditBookRequest;
+import com.example.demo.dto.response.bookResponse.AddBookResponse;
+import com.example.demo.dto.response.bookResponse.EditBookResponse;
 import com.example.demo.models.Book;
 import com.example.demo.models.enums.BookType;
 import lombok.extern.slf4j.Slf4j;
@@ -28,24 +28,24 @@ public class BookServiceTest {
     @BeforeEach
     void setUp()  {
         addBookRequest = AddBookRequest.builder()
-                .title("Dee is a wonder woman")
-                .author("Dorcas")
+                .title("Four hours to the Next Year")
+                .author("Martha")
                 .bookType(BookType.CLASSICS)
-                .isbn(124577899L)
+                .isbn(1292837281L)
                 .build();
 
         addBookRequest1 = AddBookRequest.builder()
                 .title("Tomorrow is Christmas")
                 .author("Jummie")
                 .bookType(BookType.FANTASY)
-                .isbn(132875939L)
+                .isbn(12928567281L)
                 .build();
 
         editBookRequest = EditBookRequest.builder()
-                .title("Tomorrow is a New Year")
+                .title("Few hours to the Next Year")
                 .author("Jummie")
                 .bookType(BookType.FANTASY)
-                .isbn(132875939L)
+                .isbn(1292837281L)
                 .build();
 
 

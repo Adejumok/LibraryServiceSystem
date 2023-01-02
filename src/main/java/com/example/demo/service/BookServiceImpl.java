@@ -1,10 +1,10 @@
 package com.example.demo.service;
 
 import com.cloudinary.utils.ObjectUtils;
-import com.example.demo.dto.request.AddBookRequest;
-import com.example.demo.dto.request.EditBookRequest;
-import com.example.demo.dto.response.AddBookResponse;
-import com.example.demo.dto.response.EditBookResponse;
+import com.example.demo.dto.request.bookRequest.AddBookRequest;
+import com.example.demo.dto.request.bookRequest.EditBookRequest;
+import com.example.demo.dto.response.bookResponse.AddBookResponse;
+import com.example.demo.dto.response.bookResponse.EditBookResponse;
 import com.example.demo.exception.LibrarySystemException;
 import com.example.demo.models.Book;
 import com.example.demo.repositories.BookRepository;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 @Service
 @AllArgsConstructor
-public class BookServiceImpl implements BookService{
+ class BookServiceImpl implements BookService{
     private final BookRepository bookRepository;
     private final CloudService cloudService;
     private final ModelMapper mapper;
@@ -31,9 +31,9 @@ public class BookServiceImpl implements BookService{
                     "already added exist.", 400);
         }
         Book book = mapper.map(addBookRequest, Book.class);
-        String imageUrl = cloudService.upload(addBookRequest.getImage()
-                .getBytes(), ObjectUtils.emptyMap());
-        book.setImageUrl(imageUrl);
+//        String imageUrl = cloudService.upload(addBookRequest.getImage()
+//                .getBytes(), ObjectUtils.emptyMap());
+//        book.setImageUrl(imageUrl);
         bookRepository.save(book);
         AddBookResponse response = new AddBookResponse();
         BeanUtils.copyProperties(book, response);

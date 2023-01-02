@@ -1,4 +1,4 @@
-package com.example.demo.dto.response;
+package com.example.demo.dto.response.bookResponse;
 
 import com.example.demo.models.enums.BookType;
 import lombok.*;

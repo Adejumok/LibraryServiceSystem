@@ -1,15 +1,16 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.request.RegisterNewUserRequest;
-import com.example.demo.dto.request.UserLoginRequest;
-import com.example.demo.dto.request.UserUpdateRequest;
-import com.example.demo.dto.response.RegisterNewUserResponse;
-import com.example.demo.dto.response.UserUpdateResponse;
+import com.example.demo.dto.request.userRequest.RegisterNewUserRequest;
+import com.example.demo.dto.request.userRequest.UserLoginRequest;
+import com.example.demo.dto.request.userRequest.UserUpdateRequest;
+import com.example.demo.dto.response.userResponse.RegisterNewUserResponse;
+import com.example.demo.dto.response.userResponse.UserUpdateResponse;
 import com.example.demo.exception.LibrarySystemException;
 import com.example.demo.models.LibrarySystemUser;
 import com.example.demo.security.AuthToken;
 import com.example.demo.security.jwt.JwtTokenProvider;
 import com.example.demo.service.LibrarySystemUserService;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class LibraryUserController {
     private final JwtTokenProvider tokenProvider;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@NonNull @RequestBody RegisterNewUserRequest newUserRequest){
+    public ResponseEntity<?> signUp(@NonNull @RequestBody RegisterNewUserRequest newUserRequest) throws UnirestException {
         RegisterNewUserResponse response = userService.registerNewUserResponse(newUserRequest);
         return new ResponseEntity<> (response, HttpStatus.CREATED);
     }

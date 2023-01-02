@@ -8,10 +8,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AddBookResponse {
-    private String title;
-    private String author;
-    private BookType bookType;
+public class IssueBookResponse {
+    private Long issueId;
     private Long isbn;
+    private String userEmail;
     private String message;
 }

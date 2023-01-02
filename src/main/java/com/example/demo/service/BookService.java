@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.request.AddBookRequest;
-import com.example.demo.dto.request.EditBookRequest;
-import com.example.demo.dto.response.AddBookResponse;
-import com.example.demo.dto.response.EditBookResponse;
+import com.example.demo.dto.request.bookRequest.AddBookRequest;
+import com.example.demo.dto.request.bookRequest.EditBookRequest;
+import com.example.demo.dto.response.bookResponse.AddBookResponse;
+import com.example.demo.dto.response.bookResponse.EditBookResponse;
 import com.example.demo.models.Book;
 
 import java.io.IOException;

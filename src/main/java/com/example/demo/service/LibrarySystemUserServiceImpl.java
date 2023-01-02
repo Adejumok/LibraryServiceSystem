@@ -1,15 +1,16 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.request.MailRequest;
-import com.example.demo.dto.request.RegisterNewUserRequest;
-import com.example.demo.dto.request.UserUpdateRequest;
-import com.example.demo.dto.response.RegisterNewUserResponse;
-import com.example.demo.dto.response.UserUpdateResponse;
+import com.example.demo.dto.request.userRequest.MailRequest;
+import com.example.demo.dto.request.userRequest.RegisterNewUserRequest;
+import com.example.demo.dto.request.userRequest.UserUpdateRequest;
+import com.example.demo.dto.response.userResponse.RegisterNewUserResponse;
+import com.example.demo.dto.response.userResponse.UserUpdateResponse;
 import com.example.demo.exception.LibrarySystemException;
 import com.example.demo.models.LibrarySystemUser;
 import com.example.demo.models.Role;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.service.notification.EmailService;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
-public class LibrarySystemUserServiceImpl implements LibrarySystemUserService {
+ class LibrarySystemUserServiceImpl implements LibrarySystemUserService {
     private final UserRepository userRepository;
     private final ModelMapper mapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -56,8 +57,8 @@ public class LibrarySystemUserServiceImpl implements LibrarySystemUserService {
         LibrarySystemUser user = mapper.map(registerNewUserRequest, LibrarySystemUser.class);
         String encodedUserPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(encodedUserPassword);
+        //        sendMail(registerNewUserRequest);
         LibrarySystemUser registeredUser = userRepository.save(user);
-        sendMail(registerNewUserRequest);
         return RegisterNewUserResponse.builder()
                 .message(registeredUser.getFirstName()+" registered successfully.")
                 .email(registeredUser.getEmail())
@@ -90,14 +91,16 @@ public class LibrarySystemUserServiceImpl implements LibrarySystemUserService {
         throw new LibrarySystemException("User with "+email+" not found", 404);
     }
 
-    private void sendMail(RegisterNewUserRequest request){
-        MailRequest.builder()
+
+    private void sendMail(RegisterNewUserRequest request) throws UnirestException {
+        MailRequest mailRequest =MailRequest.builder()
                 .sender(System.getenv("SENDER"))
                 .receiver(request.getEmail())
                 .subject("Library System")
                 .body("Hello " + request.getFirstName() + ". " +
                         "We are glad to let you know you have successfully registered")
                 .build();
+        emailService.sendMail(mailRequest);
 
     }
 

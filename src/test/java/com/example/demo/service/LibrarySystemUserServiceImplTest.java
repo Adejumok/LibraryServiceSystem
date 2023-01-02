@@ -1,17 +1,29 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.request.RegisterNewUserRequest;
-import com.example.demo.dto.request.UserLoginRequest;
-import com.example.demo.dto.request.UserUpdateRequest;
-import com.example.demo.dto.response.RegisterNewUserResponse;
-import com.example.demo.dto.response.UserLoginResponse;
-import com.example.demo.dto.response.UserUpdateResponse;
+import com.cloudinary.Cloudinary;
+import com.example.demo.dto.request.IssueBookRequest;
+import com.example.demo.dto.request.userRequest.MailRequest;
+import com.example.demo.dto.request.userRequest.RegisterNewUserRequest;
+import com.example.demo.dto.request.userRequest.UserLoginRequest;
+import com.example.demo.dto.request.userRequest.UserUpdateRequest;
+import com.example.demo.dto.response.IssueBookResponse;
+import com.example.demo.dto.response.userResponse.RegisterNewUserResponse;
+import com.example.demo.dto.response.userResponse.UserUpdateResponse;
+import com.example.demo.service.cloud.CloudService;
+import com.example.demo.service.notification.EmailService;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Map;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
 
 @SpringBootTest
 class LibrarySystemUserServiceImplTest {
@@ -22,11 +34,13 @@ class LibrarySystemUserServiceImplTest {
     @Autowired
     private LibrarySystemUserService service;
 
+
+
     @BeforeAll
     static void setUp(){
         request = RegisterNewUserRequest.builder()
-                .firstName("Kunle")
-                .email("kay@gmail.com")
+                .firstName("Moji")
+                .email("moji@gmail.com")
                 .password("1234")
                 .build();
 
@@ -39,7 +53,7 @@ class LibrarySystemUserServiceImplTest {
     }
 
     @Test
-    void registerNewUserTest() {
+    void registerNewUserTest() throws UnirestException {
         RegisterNewUserResponse response = service.registerNewUserResponse(request);
         assertThat(response).isNotNull();
         assertThat(response.getMessage()).isNotNull();
@@ -51,4 +65,6 @@ class LibrarySystemUserServiceImplTest {
         UserUpdateResponse updateResponse = service.userUpdateResponse(updateRequest);
         assertThat(updateResponse).isNotNull();
     }
+
+
 }
