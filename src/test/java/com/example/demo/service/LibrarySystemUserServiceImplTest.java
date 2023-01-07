@@ -39,14 +39,14 @@ class LibrarySystemUserServiceImplTest {
     @BeforeAll
     static void setUp(){
         request = RegisterNewUserRequest.builder()
-                .firstName("Moji")
-                .email("moji@gmail.com")
+                .firstName("Akin")
+                .email("akin@gmail.com")
                 .password("1234")
                 .build();
 
         updateRequest = UserUpdateRequest.builder()
-                .lastName("Quadri")
-                .email("kay@gmail.com")
+                .lastName("Moses")
+                .email("akin@gmail.com")
                 .mobile("2348134567389")
                 .address("No 2, Gbera Street, Eko")
                 .build();

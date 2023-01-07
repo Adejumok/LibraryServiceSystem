@@ -23,9 +23,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-
+import java.util.List;
 @RestController
+@RequestMapping("/user")
 @AllArgsConstructor
+@CrossOrigin("http://localhost:3000")
 public class LibraryUserController {
     private final AuthenticationManager authenticationManager;
     private final LibrarySystemUserService userService;
@@ -53,21 +55,14 @@ public class LibraryUserController {
         return new  ResponseEntity<>(new AuthToken(token, user.getId()), HttpStatus.OK);
     }
 
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<?> update(@RequestBody UserUpdateRequest updateRequest) throws LibrarySystemException{
         UserUpdateResponse response = userService.userUpdateResponse(updateRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/dashboard")
-    @PreAuthorize("hasRole('ROOT')")
-    public String getBoard(){
-        return "Welcome to the Dashboard. ";
-    }
-
-    @GetMapping("/profile")
-    @PreAuthorize("hasRole('ROOT')")
-    public String getProfile(){
-        return "Welcome to the Profile Page.";
+    @GetMapping("/getAllUsers")
+    public List<LibrarySystemUser> librarySystemUsers(){
+        return userService.getAllUsers();
     }
 }

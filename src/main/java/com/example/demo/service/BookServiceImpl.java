@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.cloudinary.utils.ObjectUtils;
 import com.example.demo.dto.request.bookRequest.AddBookRequest;
 import com.example.demo.dto.request.bookRequest.EditBookRequest;
 import com.example.demo.dto.response.bookResponse.AddBookResponse;
@@ -8,7 +7,6 @@ import com.example.demo.dto.response.bookResponse.EditBookResponse;
 import com.example.demo.exception.LibrarySystemException;
 import com.example.demo.models.Book;
 import com.example.demo.repositories.BookRepository;
-import com.example.demo.service.cloud.CloudService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -21,7 +19,6 @@ import java.util.Optional;
 @AllArgsConstructor
  class BookServiceImpl implements BookService{
     private final BookRepository bookRepository;
-    private final CloudService cloudService;
     private final ModelMapper mapper;
     @Override
     public AddBookResponse addBookResponse(AddBookRequest addBookRequest) throws IOException {
@@ -31,9 +28,6 @@ import java.util.Optional;
                     "already added exist.", 400);
         }
         Book book = mapper.map(addBookRequest, Book.class);
-//        String imageUrl = cloudService.upload(addBookRequest.getImage()
-//                .getBytes(), ObjectUtils.emptyMap());
-//        book.setImageUrl(imageUrl);
         bookRepository.save(book);
         AddBookResponse response = new AddBookResponse();
         BeanUtils.copyProperties(book, response);
@@ -71,16 +65,19 @@ import java.util.Optional;
             throw new LibrarySystemException("Book with isbn "+editBookRequest.getIsbn()+"" +
                     "not found",404);
         }
-        gottenBook.setTitle(editBookRequest.getTitle());
-        gottenBook.setAuthor(editBookRequest.getAuthor());
-        gottenBook.setBookDescription(editBookRequest.getBookDescription());
-        gottenBook.setImageUrl(editBookRequest.getImageUrl());
-        gottenBook.setBookType(editBookRequest.getBookType());
+        setExitingBookToNewEditRequest(editBookRequest, gottenBook);
         bookRepository.save(gottenBook);
         EditBookResponse response = new EditBookResponse();
         BeanUtils.copyProperties(gottenBook, response);
         response.setMessage("Both with isbn "+editBookRequest.getIsbn()+"" +
                 "successfully updated.");
         return response;
+    }
+
+    private void setExitingBookToNewEditRequest(EditBookRequest editBookRequest, Book gottenBook) {
+        gottenBook.setTitle(editBookRequest.getTitle());
+        gottenBook.setAuthor(editBookRequest.getAuthor());
+        gottenBook.setBookDescription(editBookRequest.getBookDescription());
+        gottenBook.setBookType(editBookRequest.getBookType());
     }
 }

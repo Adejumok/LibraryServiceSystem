@@ -12,7 +12,6 @@ import com.example.demo.repositories.UserRepository;
 import com.example.demo.service.notification.EmailService;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -22,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 @Service
  class LibrarySystemUserServiceImpl implements LibrarySystemUserService {
     private final UserRepository userRepository;
-    private final ModelMapper mapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
     @Override
@@ -50,19 +49,25 @@ import java.util.stream.Collectors;
     @Override
     public RegisterNewUserResponse registerNewUserResponse(RegisterNewUserRequest registerNewUserRequest) {
         Optional<LibrarySystemUser> foundUser = userRepository.findByEmail(registerNewUserRequest.getEmail());
-        if (foundUser.isPresent()){
-            throw new  LibrarySystemException("Library user with email "+registerNewUserRequest.getEmail()+" " +
-                    "already registered", 400);
+        if (foundUser.isEmpty()){
+            LibrarySystemUser user = new LibrarySystemUser();
+                    registerNewUser(registerNewUserRequest, user);
+            return RegisterNewUserResponse.builder()
+                    .message(user.getFirstName()+" registered successfully.")
+                    .email(user.getEmail())
+                    .build();
         }
-        LibrarySystemUser user = mapper.map(registerNewUserRequest, LibrarySystemUser.class);
-        String encodedUserPassword = bCryptPasswordEncoder.encode(user.getPassword());
+        
+        throw new  LibrarySystemException("Library user with email "+registerNewUserRequest.getEmail()+" " +
+                "already registered", 400);
+    }
+
+    private LibrarySystemUser registerNewUser(RegisterNewUserRequest registerNewUserRequest, LibrarySystemUser user ) {
+        user.setFirstName(registerNewUserRequest.getFirstName());
+        user.setEmail(registerNewUserRequest.getEmail());
+        String encodedUserPassword = bCryptPasswordEncoder.encode(registerNewUserRequest.getPassword());
         user.setPassword(encodedUserPassword);
-        //        sendMail(registerNewUserRequest);
-        LibrarySystemUser registeredUser = userRepository.save(user);
-        return RegisterNewUserResponse.builder()
-                .message(registeredUser.getFirstName()+" registered successfully.")
-                .email(registeredUser.getEmail())
-                .build();
+        return userRepository.save(user);
     }
 
     @Override
@@ -70,9 +75,7 @@ import java.util.stream.Collectors;
         Optional<LibrarySystemUser> foundUser = userRepository.findByEmail(updateRequest.getEmail());
         if (foundUser.isPresent()){
             LibrarySystemUser existingUser = foundUser.get();
-            existingUser.setLastName(updateRequest.getLastName());
-            existingUser.setAddress(updateRequest.getAddress());
-            existingUser.setMobile(updateRequest.getMobile());
+            setExistingUserRemainingDetailsToUpdateRequest(updateRequest, existingUser);
             userRepository.save(existingUser);
             return UserUpdateResponse.builder()
                     .message(existingUser.getFirstName()+" profile updated successfully.")
@@ -82,6 +85,12 @@ import java.util.stream.Collectors;
                 "does not exist.", 400);
     }
 
+    private void setExistingUserRemainingDetailsToUpdateRequest(UserUpdateRequest updateRequest, LibrarySystemUser existingUser) {
+        existingUser.setLastName(updateRequest.getLastName());
+        existingUser.setAddress(updateRequest.getAddress());
+        existingUser.setMobile(updateRequest.getMobile());
+    }
+
     @Override
     public LibrarySystemUser getUserByEmail(String email) {
         LibrarySystemUser foundUser = userRepository.findByEmail(email).orElse(null);
@@ -89,6 +98,11 @@ import java.util.stream.Collectors;
             return foundUser;
         }
         throw new LibrarySystemException("User with "+email+" not found", 404);
+    }
+
+    @Override
+    public List<LibrarySystemUser> getAllUsers() {
+        return userRepository.findAll();
     }
 
 
